@@ -1,317 +1,265 @@
-swagger: "2.0"
+openapi: 3.0.0
+
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/rpirrmdg/ROADMAP/1.0.0
+
 info:
-  version: '1.0.0'
+  description: This is an example API for ROADMAP development.
+  version: "1.0.0"
   title: ROADMAP
-  description: 
-    This is the API document for the project ROADMAP development.
-  contact:
-    name: Qiyun CHENG
-    email: chengq3@rpi.com
-  
-host: "rpi.edu"
+  contact: 
+    name: Qiyun Cheng
+    email: chengqy0113@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
 tags:
-  - name: MonteCarlo
-  - name: Phantom
-  - name: DL-Segmentation
-  
+  - name: Monte Carlo
+    description: Dose calculation using Monte Carlo method.
+  - name: Phantoms
+    description: Analytical Phantoms for dose calculation.
+  - name: DL Segmentation
+    description: Images segmentation using deeplearning method.
+
 externalDocs:
   description: "Find out more about RPI RRMDG Group"
   url: "http://rrmdg.rpi.edu"
 
 paths:
-  /MonteCarlo/new:
-    post:
-      tags:
-      - "MonteCarlo"
-      summary: "upload new Monte Carlo flies"
-      description: ""
-      operationId: "addMonteCarlo"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "MonteCarlo object that needs to be added to the Phantom"
-        required: true
-        schema:
-          $ref: "#/definitions/MonteCarlo"
-      responses:
-        405:
-          description: "Invalid input"
-      security:
-      - MonteCarloPhantom_auth:
-        - "write:MonteCarlos"
-        - "read:MonteCarlos"
-    
-  /MonteCarlo/existence:
+  
+  /Existence/Phantoms:
     get:
       tags:
-      - "MonteCarlo"
-      summary: "Finds Monte Carlo exist methods"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findMonteCarlosByStatus"
-      produces:
-      - "application/xml"
-      - "application/json"
+        - Phantoms
+      summary: searches Existence phantoms
+      operationId: ExistencePhantoms
+      description: |
+        By passing in the appropriate options, you can search for
+        available Existence in the system
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up Existence
+          required: false
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/MonteCarlo"
-        400:
-          description: "Invalid status value"
-      security:
-      - MonteCarloPhantom_auth:
-        - "write:MonteCarlos"
-        - "read:MonteCarlos"
- 
-  /Phantom/existence:
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Existence'
+        '400':
+          description: bad input parameter
+          
+  /Existence/Monte Carlo:
     get:
       tags:
-      - "Phantom"
-      summary: "get exist phantoms from server"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /Phantom/new:
-    post:
-      tags:
-      - "Phantom"
-      summary: "upload a new phantom"
-      description: ""
-      operationId: "placeOrder"
-      produces:
-      - "application/xml"
-      - "application/json"
+        - Monte Carlo
+      summary: searches Existence Monte Carlo codes
+      operationId: ExistenceMCcodes
+      description: |
+        By passing in the appropriate options, you can search for
+        available Existence in the system
       parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the MonteCarlo"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up Existence
+          required: false
           schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-
-
-
-  /DL-Segmentation/create:
-    post:
-      tags:
-      - "DL-Segmentation"
-      summary: "Create DL-Segmentation"
-      description: "This can only be done by the logged in DL-Segmentation."
-      operationId: "createDL-Segmentation"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created DL-Segmentation object"
-        required: true
-        schema:
-          $ref: "#/definitions/DL-Segmentation"
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
       responses:
-        default:
-          description: "successful operation"
-  /DL-Segmentation/results:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Existence'
+        '400':
+          description: bad input parameter
+
+  /Existence/DL Segmentation:
     get:
       tags:
-      - "DL-Segmentation"
-      summary: "get DL-Segmentation results"
-      description: ""
-      operationId: "loginDL-Segmentation"
-      produces:
-      - "application/xml"
-      - "application/json"
+        - DL Segmentation
+      summary: searches Existence DL Segmentation codes
+      operationId: ExistenceDLSegmentation
+      description: |
+        By passing in the appropriate options, you can search for
+        available Existence in the system
       parameters:
-      - name: "DL-Segmentationname"
-        in: "query"
-        description: "The DL-Segmentation name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up Existence
+          required: false
           schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the DL-Segmentation"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        400:
-          description: "Invalid DL-Segmentationname/password supplied"
-
-
-
-securityDefinitions:
-  MonteCarloPhantom_auth:
-    type: "oauth2"
-    authorizationUrl: "http://MonteCarloPhantom.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:MonteCarlos: "modify MonteCarlos in your account"
-      read:MonteCarlos: "read your MonteCarlos"
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      MonteCarloId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  DL-Segmentation:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      DL-Segmentationname:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      DL-SegmentationStatus:
-        type: "integer"
-        format: "int32"
-        description: "DL-Segmentation Status"
-    xml:
-      name: "DL-Segmentation"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  MonteCarlo:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Existence'
+        '400':
+          description: bad input parameter
+          
+          
+  /Update/Monte Carlo:
+    post:
       tags:
-        type: "array"
-        xml:
-          name: "tag"
-          wrapped: true
-        items:
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "MonteCarlo status in the Phantom"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "MonteCarlo"
- 
+        - Monte Carlo
+      summary: adds new Monte Carlo codes
+      operationId: Update Monte Carlo
+      description: Adds an item to the system
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Existence'
+        description: Existence item to add
+        
+  /Update/Phantoms:
+    post:
+      tags:
+        - Phantoms
+      summary: adds a new phantom
+      operationId: Update Phantoms
+      description: Adds an item to the system
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Existence'
+        description: Existence item to add        
+        
+        
+        
+  /Update/DL Segmentation:
+    post:
+      tags:
+        - DL Segmentation
+      summary: adds new DL Segmentation codes
+      operationId: Update DL Sgementation
+      description: Adds an item to the system
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Existence'
+        description: Existence item to add  
+  
+
+components:
+  schemas:
+    Existence:
+      type: object
+      required:
+        - id
+        - name
+        - Update
+        - releaseDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Widget Adapter
+        releaseDate:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        Update:
+          $ref: '#/components/schemas/Update'
+    Update:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: ACME Corporation
+        homePage:
+          type: string
+          format: url
+          example: 'https://www.acme-corp.com'
+        phone:
+          type: string
+          example: 408-867-5309
+      type: object
