@@ -1,30 +1,317 @@
 swagger: "2.0"
 info:
-  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
-  version: "1.0.0"
-  title: "ROADMAP"
-  termsOfService: "http://swagger.io/terms/"
+  version: '1.0.0'
+  title: ROADMAP
+  description: 
+    This is the API document for the project ROADMAP development.
   contact:
-    name: "Qiyun CHENG"
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
+    name: Qiyun CHENG
+    email: chengq3@rpi.com
+  
+host: "rpi.edu"
+
 tags:
-- name: "Monte Carlo"
-  description: ""
-  externalDocs:
-    description: "Find out more about Archer"
-    url: "http://rrmdg.rpi.edu"
-- name: "Phantom"
-  description: "Access to Petstore orders"
-  externalDocs:
-    description: "Find out more about VIP-Man"
-    url: "http://rrmdg.rpi.edu"
-- name: "DL-Segmentation"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about Virtual Dose"
-    url: "http://rrmdg.rpi.edu"
+  - name: MonteCarlo
+  - name: Phantom
+  - name: DL-Segmentation
+  
+externalDocs:
+  description: "Find out more about RPI RRMDG Group"
+  url: "http://rrmdg.rpi.edu"
+
+paths:
+  /MonteCarlo/new:
+    post:
+      tags:
+      - "MonteCarlo"
+      summary: "upload new Monte Carlo flies"
+      description: ""
+      operationId: "addMonteCarlo"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "MonteCarlo object that needs to be added to the Phantom"
+        required: true
+        schema:
+          $ref: "#/definitions/MonteCarlo"
+      responses:
+        405:
+          description: "Invalid input"
+      security:
+      - MonteCarloPhantom_auth:
+        - "write:MonteCarlos"
+        - "read:MonteCarlos"
+    
+  /MonteCarlo/existence:
+    get:
+      tags:
+      - "MonteCarlo"
+      summary: "Finds Monte Carlo exist methods"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findMonteCarlosByStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/MonteCarlo"
+        400:
+          description: "Invalid status value"
+      security:
+      - MonteCarloPhantom_auth:
+        - "write:MonteCarlos"
+        - "read:MonteCarlos"
+ 
+  /Phantom/existence:
+    get:
+      tags:
+      - "Phantom"
+      summary: "get exist phantoms from server"
+      description: "Returns a map of status codes to quantities"
+      operationId: "getInventory"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "integer"
+              format: "int32"
+      security:
+      - api_key: []
+  /Phantom/new:
+    post:
+      tags:
+      - "Phantom"
+      summary: "upload a new phantom"
+      description: ""
+      operationId: "placeOrder"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "order placed for purchasing the MonteCarlo"
+        required: true
+        schema:
+          $ref: "#/definitions/Order"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Order"
+        400:
+          description: "Invalid Order"
+
+
+
+  /DL-Segmentation/create:
+    post:
+      tags:
+      - "DL-Segmentation"
+      summary: "Create DL-Segmentation"
+      description: "This can only be done by the logged in DL-Segmentation."
+      operationId: "createDL-Segmentation"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created DL-Segmentation object"
+        required: true
+        schema:
+          $ref: "#/definitions/DL-Segmentation"
+      responses:
+        default:
+          description: "successful operation"
+  /DL-Segmentation/results:
+    get:
+      tags:
+      - "DL-Segmentation"
+      summary: "get DL-Segmentation results"
+      description: ""
+      operationId: "loginDL-Segmentation"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "DL-Segmentationname"
+        in: "query"
+        description: "The DL-Segmentation name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the DL-Segmentation"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+        400:
+          description: "Invalid DL-Segmentationname/password supplied"
+
+
+
+securityDefinitions:
+  MonteCarloPhantom_auth:
+    type: "oauth2"
+    authorizationUrl: "http://MonteCarloPhantom.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:MonteCarlos: "modify MonteCarlos in your account"
+      read:MonteCarlos: "read your MonteCarlos"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Order:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      MonteCarloId:
+        type: "integer"
+        format: "int64"
+      quantity:
+        type: "integer"
+        format: "int32"
+      shipDate:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+        description: "Order Status"
+        enum:
+        - "placed"
+        - "approved"
+        - "delivered"
+      complete:
+        type: "boolean"
+        default: false
+    xml:
+      name: "Order"
+  Category:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Category"
+  DL-Segmentation:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      DL-Segmentationname:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      DL-SegmentationStatus:
+        type: "integer"
+        format: "int32"
+        description: "DL-Segmentation Status"
+    xml:
+      name: "DL-Segmentation"
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Tag"
+  MonteCarlo:
+    type: "object"
+    required:
+    - "name"
+    - "photoUrls"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      category:
+        $ref: "#/definitions/Category"
+      name:
+        type: "string"
+        example: "doggie"
+      photoUrls:
+        type: "array"
+        xml:
+          name: "photoUrl"
+          wrapped: true
+        items:
+          type: "string"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      status:
+        type: "string"
+        description: "MonteCarlo status in the Phantom"
+        enum:
+        - "available"
+        - "pending"
+        - "sold"
+    xml:
+      name: "MonteCarlo"
+ 
