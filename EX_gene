@@ -7,9 +7,9 @@ info:
     [MyGene.info](http://mygene.info/)
   termsOfService: http://mygene.info/terms/
   contact:
-    name: Chunlei Wu
+    name: Qiyun CHENG
     x-role: responsible developer
-    email: help@mygene.info
+    email: chengq3@rpi.com
     x-id: 'https://github.com/newgene'
 servers:
   - url: 'http://mygene.info/v3'
