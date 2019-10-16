@@ -4,6 +4,8 @@ servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/rpirrmdg/ROADMAP/1.0.0
 
+termsOfService: http://www.apache.org/licenses/LICENSE-2.0.html
+
 info:
   description: This is an example API for ROADMAP development.
   version: "1.0.0"
@@ -11,9 +13,6 @@ info:
   contact: 
     name: Qiyun Cheng
     email: chengqy0113@gmail.com
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
 tags:
   - name: Monte Carlo
