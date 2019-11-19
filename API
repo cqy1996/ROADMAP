@@ -10,8 +10,8 @@ info:
   version: "1.0.0"
   title: ROADMAP
   contact: 
-    name: Qiyun Cheng
-    email: chengqy0113@gmail.com
+    name: Project Director/PI, Prof. X. George Xu
+    email: xug2@rpi.edu
   termsOfService: http://www.apache.org/licenses/LICENSE-2.0.html
 
 tags:
@@ -23,8 +23,8 @@ tags:
     description: Images segmentation using deeplearning method.
 
 externalDocs:
-  description: "Find out more about RPI RRMDG Group"
-  url: "http://rrmdg.rpi.edu"
+  description: "Find out more about the ROADMAP Project"
+  url: "http://www.rpi.edu/dept/radsafe/public_html/ROADMAP.htm"
 
 paths:
   
